@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { getUserFavorites, removeFromFavorites } from '../services/firebaseService';
-import { Bookmark, BookmarkX, Clock, Trash2 } from 'lucide-react';
+import { Bookmark, Clock, Trash2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
 function FavoriteCard({ item, onRemove, index }) {

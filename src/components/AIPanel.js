@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { 
   FileText, MessageCircle, Lightbulb, Shield, 
-  Send, Bot, Clock, CheckCircle, Info, AlertCircle, 
-  Sparkles, User, Check, X
+  Send, CheckCircle, 
+  User, X
 } from 'lucide-react';
 import { 
   summarizeArticle, streamArticleSummary, streamAskArticle, 
@@ -18,12 +18,6 @@ const TABS = [
   { id: 'factcheck', label: 'Verify', icon: Shield },
 ];
 
-const SENTIMENT_COLORS = {
-  positive: 'var(--accent-green)',
-  negative: 'var(--accent)',
-  neutral: 'var(--text-3)',
-  mixed: 'var(--accent-warm)',
-};
 
 function MarkdownContent({ text, isStreaming = false }) {
   if (!text) return null;

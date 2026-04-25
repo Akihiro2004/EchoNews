@@ -21,7 +21,8 @@ const withRetry = async (fn, maxAttempts = 3) => {
       const { keyIndex } = geminiAPIManager.getCurrentAPIKey();
       geminiAPIManager.recordError(keyIndex, error);
       if (attempts >= maxAttempts) throw new Error(`AI request failed: ${error.message}`);
-      await new Promise(r => setTimeout(r, 1000 * attempts));
+      const delay = 1000 * attempts;
+      await new Promise(resolve => setTimeout(resolve, delay));
     }
   }
 };
@@ -332,7 +333,7 @@ export {
   forceGeminiRotation
 } from './apiKeyManager.js';
 
-export default {
+const aiService = {
   summarizeArticle,
   streamArticleSummary,
   askAboutArticle,
@@ -344,3 +345,5 @@ export default {
   generateNewsSummary,
   explainTopic,
 };
+
+export default aiService;

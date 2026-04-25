@@ -145,7 +145,7 @@ function NewsCard({ article, user, onFavoriteToggle, favorited, index }) {
       onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.borderColor = 'var(--border)'; e.currentTarget.style.boxShadow = 'none'; }}
     >
       {isInternal ? (
-        <Link to={cardUrl} state={{ article }} style={{ display: 'block', textDecoration: 'none', color: 'inherit', flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <Link to={cardUrl} state={{ article }} style={{ textDecoration: 'none', color: 'inherit', flex: 1, display: 'flex', flexDirection: 'column' }}>
           <div style={{ height: 180, overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
             {!imgError && article.urlToImage ? (
               <img src={article.urlToImage} alt={article.title} onError={() => setImgError(true)}
@@ -205,7 +205,7 @@ function NewsCard({ article, user, onFavoriteToggle, favorited, index }) {
           </div>
         </Link>
       ) : (
-        <a href={cardUrl} target="_blank" rel="noopener noreferrer" style={{ display: 'block', textDecoration: 'none', color: 'inherit', flex: 1, display: 'flex', flexDirection: 'column' }}>
+        <a href={cardUrl} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none', color: 'inherit', flex: 1, display: 'flex', flexDirection: 'column' }}>
           <div style={{ height: 180, overflow: 'hidden', flexShrink: 0, position: 'relative' }}>
             {!imgError && article.urlToImage ? (
               <img src={article.urlToImage} alt={article.title} onError={() => setImgError(true)}

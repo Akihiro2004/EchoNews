@@ -152,7 +152,7 @@ export default function ForYou({ user, onMenuOpen }) {
           {/* AI Brief */}
           {(summaryLoading || trendSummary) && (
             <div style={{
-              padding: '18px 20px', background: 'var(--surface)', border: '1px solid var(--primary-border)',
+              padding: '18px 20px', border: '1px solid var(--primary-border)',
               borderRadius: 'var(--radius-lg)', marginBottom: 24,
               background: 'linear-gradient(135deg, rgba(217,119,87,0.07), rgba(191,99,64,0.04))',
             }}>
