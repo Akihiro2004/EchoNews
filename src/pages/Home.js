@@ -131,7 +131,7 @@ function NewsCard({ article, user, onFavoriteToggle, favorited, index }) {
   const [imgError, setImgError] = useState(false);
   const timeAgo = article.publishedAt ? formatDistanceToNow(new Date(article.publishedAt), { addSuffix: true }) : '';
 
-  const isInternal = article.apiSource === 'guardian' || article.isCustom;
+  const isInternal = article.apiSource === 'guardian' || article.apiSource === 'neurafeed' || article.isCustom;
   const cardUrl = isInternal ? `/news/${encodeURIComponent(article.id)}` : article.url;
 
   return (
@@ -164,13 +164,6 @@ function NewsCard({ article, user, onFavoriteToggle, favorited, index }) {
                 background: 'var(--primary-gradient)', padding: '3px 8px', borderRadius: 'var(--radius-full)',
               }}>Custom</div>
             )}
-            {article.apiSource === 'neurafeed' && (
-              <div style={{
-                position: 'absolute', top: 10, left: 10, fontSize: 10, fontWeight: 700,
-                letterSpacing: '0.08em', textTransform: 'uppercase', color: '#fff',
-                background: 'linear-gradient(135deg, #6366f1 0%, #a855f7 100%)', padding: '3px 8px', borderRadius: 'var(--radius-full)',
-                boxShadow: '0 2px 10px rgba(99, 102, 241, 0.4)'
-              }}>NeuraFeed</div>
             )}
           </div>
 
