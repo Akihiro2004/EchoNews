@@ -1,0 +1,33 @@
+// DEVELOPMENT RULES - IMMEDIATE FIX FOR PERMISSION ERRORS
+// Copy this EXACTLY to Firebase Console > Firestore Database > Rules
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow all authenticated users to read and write everything
+    // This fixes all permission errors during development
+    match /{document=**} {
+      allow read, write: if request.auth != null;
+    }
+    
+    // Allow public read for published content
+    match /customNews/{docId} {
+      allow read: if resource.data.isPublished == true;
+    }
+    
+    // Allow public read for app settings
+    match /appSettings/{settingId} {
+      allow read: if resource.data.isPublic == true;
+    }
+    
+    // Allow public read for news categories
+    match /newsCategories/{categoryId} {
+      allow read: if true;
+    }
+    
+    // Allow public read for search cache
+    match /searchCache/{cacheId} {
+      allow read: if true;
+    }
+  }
+}

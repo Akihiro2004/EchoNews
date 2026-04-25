@@ -1,0 +1,56 @@
+/* App-level layout */
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+  position: relative;
+}
+
+.app-main {
+  flex: 1;
+  min-height: 100vh;
+  transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  margin-left: var(--sidebar-w);
+}
+
+@media (max-width: 768px) {
+  .app-main {
+    margin-left: 0;
+    padding-bottom: 72px;
+  }
+}
+
+/* Overlay for mobile sidebar */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 99;
+  animation: fadeIn 0.2s ease;
+}
+
+/* Global spinner */
+.app-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background: var(--bg);
+  flex-direction: column;
+  gap: 16px;
+}
+
+.app-loader-spinner {
+  width: 36px;
+  height: 36px;
+  border: 2.5px solid var(--surface-3);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+.app-loader p {
+  font-size: 13px;
+  color: var(--text-3);
+  letter-spacing: 0.02em;
+}
