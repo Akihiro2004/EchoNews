@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { fetchApiNews } from './newsApiService';
-import { fetchNeuraFeedRecent } from './neuraFeedService';
+import { fetchNeuraFeedRecent, fetchNeuraFeedArticleById } from './neuraFeedService';
 import { parseAdvancedQuery, filterArticlesAdvanced } from './searchService';
 
 // API Configuration - Only Guardian API
@@ -88,6 +88,24 @@ export const fetchGuardianNews = async (params = {}) => {
   } catch (error) {
     console.error('Guardian API Error:', error);
     return { articles: [], totalResults: 0, status: 'error', error: error.message };
+  }
+};
+
+// Fetch a single article by ID from Guardian
+export const fetchGuardianArticleById = async (id) => {
+  try {
+    const response = await axios.get(
+      `${NEWS_APIS.guardian.baseURL}/${id}?api-key=${NEWS_APIS.guardian.apiKey}&show-fields=thumbnail,trailText,body,byline`,
+      { timeout: 5000 }
+    );
+    
+    if (response.data && response.data.response && response.data.response.content) {
+      return normalizeArticle(response.data.response.content, 'guardian');
+    }
+    return null;
+  } catch (error) {
+    console.error('Guardian Article ID Error:', error);
+    return null;
   }
 };
 
@@ -264,4 +282,28 @@ export const getTrendingTopics = async () => {
     name: keyword,
     searchCount: Math.floor(Math.random() * 10000) + 1000
   }));
+};
+// Fetch a single article by ID from any source
+export const fetchArticleById = async (id) => {
+  if (!id) return null;
+  
+  // 1. Try to determine source by ID pattern
+  // Guardian IDs always contain slashes like "world/2024/..."
+  if (id.includes('/')) {
+    return await fetchGuardianArticleById(id);
+  }
+  
+  // 2. Try NeuraFeed (IDs are usually alphanumeric UUIDs)
+  // We can also try NeuraFeed if Guardian fails or if the ID matches a Neura pattern
+  const neuraArt = await fetchNeuraFeedArticleById(id);
+  if (neuraArt) return neuraArt;
+
+  // 3. Last resort - check local storage "customNews" (created by user)
+  try {
+    const custom = JSON.parse(localStorage.getItem('customNews') || '[]');
+    const found = custom.find(a => a.id === id);
+    if (found) return found;
+  } catch {}
+
+  return null;
 };

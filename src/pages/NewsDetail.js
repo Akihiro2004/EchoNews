@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useLocation, useNavigate, Link } from 'react-router-dom';
 import { addToFavorites, removeFromFavorites, isArticleFavorited, addToReadingHistory } from '../services/firebaseService';
+import { fetchArticleById } from '../services/newsService';
 import AIPanel from '../components/AIPanel';
 import { useUI } from '../App';
 import {
@@ -24,15 +25,32 @@ export default function NewsDetail({ user, onOpenAuth, onMenuOpen }) {
   const { setCurrentArticle } = useUI();
 
   useEffect(() => {
-    if (!article) {
-      const cached = JSON.parse(localStorage.getItem('newsArticles') || '[]');
-      const customCached = JSON.parse(localStorage.getItem('customNews') || '[]');
-      const all = [...cached, ...customCached];
-      const found = all.find(a => a.id === decodeURIComponent(articleId));
-      if (found) setArticle(found);
-      setLoading(false);
-    }
-  }, [articleId]);
+    (async () => {
+      if (!article) {
+        setLoading(true);
+        // 1. Try local cache
+        const cached = JSON.parse(localStorage.getItem('newsArticles') || '[]');
+        const customCached = JSON.parse(localStorage.getItem('customNews') || '[]');
+        const all = [...cached, ...customCached];
+        const found = all.find(a => a.id === decodeURIComponent(articleId));
+        
+        if (found) {
+          setArticle(found);
+          setLoading(false);
+        } else {
+          // 2. Fetch from API
+          try {
+            const fetched = await fetchArticleById(decodeURIComponent(articleId));
+            if (fetched) setArticle(fetched);
+          } catch (err) {
+            console.error('Failed to fetch article:', err);
+          } finally {
+            setLoading(false);
+          }
+        }
+      }
+    })();
+  }, [articleId, article]);
 
   useEffect(() => {
     if (article) {
@@ -232,39 +250,42 @@ export default function NewsDetail({ user, onOpenAuth, onMenuOpen }) {
                 />
                 <style>{`
                   .article-body {
-                    font-size: 17px;
-                    line-height: 1.8;
+                    font-size: 18px;
+                    line-height: 1.85;
                     color: var(--text-2);
-                    letter-spacing: 0.01em;
+                    letter-spacing: -0.003em;
                   }
                   .article-body p {
-                    margin-bottom: 20px;
+                    margin-bottom: 24px;
                   }
                   .article-body h2 {
                     font-family: 'Instrument Serif', Georgia, serif;
-                    font-size: 24px;
+                    font-size: 28px;
+                    font-weight: 400;
+                    color: var(--text-1);
+                    margin: 40px 0 16px;
+                    line-height: 1.25;
+                    letter-spacing: -0.5px;
+                  }
+                  .article-body h3 {
+                    font-family: 'Instrument Serif', Georgia, serif;
+                    font-size: 22px;
                     font-weight: 400;
                     color: var(--text-1);
                     margin: 32px 0 14px;
                     line-height: 1.3;
-                    letter-spacing: -0.3px;
-                  }
-                  .article-body h3 {
-                    font-family: 'Instrument Serif', Georgia, serif;
-                    font-size: 20px;
-                    font-weight: 400;
-                    color: var(--text-1);
-                    margin: 28px 0 12px;
-                    line-height: 1.35;
                   }
                   .article-body a {
                     color: var(--primary);
-                    text-decoration: underline;
-                    text-decoration-thickness: 1px;
-                    text-underline-offset: 3px;
-                    transition: opacity 0.15s;
+                    text-decoration: none;
+                    border-bottom: 1px solid var(--primary-border);
+                    padding-bottom: 1px;
+                    transition: all 0.2s;
                   }
-                  .article-body a:hover { opacity: 0.75; }
+                  .article-body a:hover { 
+                    color: var(--primary-dark);
+                    border-bottom-color: var(--primary);
+                  }
                   .article-body strong, .article-body b {
                     color: var(--text-1);
                     font-weight: 600;
@@ -274,36 +295,47 @@ export default function NewsDetail({ user, onOpenAuth, onMenuOpen }) {
                     color: var(--text-1);
                   }
                   .article-body ul, .article-body ol {
-                    padding-left: 24px;
-                    margin-bottom: 20px;
+                    padding-left: 28px;
+                    margin-bottom: 24px;
+                    color: var(--text-2);
                   }
                   .article-body li {
-                    margin-bottom: 8px;
+                    margin-bottom: 12px;
                     line-height: 1.7;
                   }
                   .article-body blockquote {
-                    border-left: 3px solid var(--primary);
-                    margin: 24px 0;
-                    padding: 4px 0 4px 20px;
+                    border-left: 4px solid var(--primary);
+                    margin: 32px 0;
+                    padding: 8px 0 8px 24px;
                     font-family: 'Instrument Serif', Georgia, serif;
-                    font-size: 19px;
+                    font-size: 22px;
                     font-style: italic;
                     color: var(--text-1);
-                    line-height: 1.6;
+                    line-height: 1.5;
+                    background: var(--primary-subtle);
+                    border-top-right-radius: var(--radius);
+                    border-bottom-right-radius: var(--radius);
                   }
                   .article-body figure {
-                    margin: 24px 0;
+                    margin: 32px 0;
                   }
                   .article-body figure img {
                     width: 100%;
-                    border-radius: var(--radius-lg);
+                    border-radius: var(--radius-xl);
                     object-fit: cover;
+                    box-shadow: var(--shadow-lg);
                   }
                   .article-body figcaption {
                     font-size: 13px;
                     color: var(--text-3);
-                    margin-top: 8px;
+                    margin-top: 12px;
                     text-align: center;
+                    font-style: italic;
+                  }
+                  .article-body hr {
+                    border: none;
+                    border-top: 1px solid var(--border);
+                    margin: 40px 0;
                   }
                   .article-body aside, .article-body .element-rich-link,
                   .article-body .element-tweet, .article-body .element-interactive {

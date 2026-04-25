@@ -135,3 +135,38 @@ export const fetchNeuraFeedLatest = async () => {
     return null;
   }
 };
+
+/**
+ * Fetch a single article by ID from NeuraFeed.
+ */
+export const fetchNeuraFeedArticleById = async (id) => {
+  try {
+    const data = await fetchWithFallback(`/get-article?id=${id}`);
+    
+    if (!data.success || !data.article) {
+      console.warn('NeuraFeed Article fetch failed or not found', id);
+      return null;
+    }
+
+    const article = data.article;
+    return {
+      id: article.id,
+      title: article.title,
+      description: article.summary,
+      content: article.article,
+      contentIsHtml: true,
+      url: `https://feed.neuraspheres.com/news/${article.id}`,
+      urlToImage: null,
+      publishedAt: article.createdAt,
+      source: { name: 'NeuraFeed' },
+      category: categorizeArticle(article),
+      apiSource: 'neurafeed',
+      tags: article.tags || [],
+      whyItMatters: article.whyItMatters,
+      sources: (article.sources || []).map(parseSource).filter(Boolean)
+    };
+  } catch (error) {
+    console.error('Error fetching NeuraFeed Article by ID:', error);
+    return null;
+  }
+};

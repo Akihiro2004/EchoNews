@@ -319,6 +319,12 @@ export default function Home({ user, onOpenAuth, onMenuOpen }) {
       const fresh = newsResult.articles || [];
       const combined = pg === 1 ? [...custom, ...fresh] : fresh;
       setArticles(prev => pg === 1 ? combined : [...prev, ...combined]);
+      
+      // Cache articles for NewsDetail lookup
+      if (pg === 1) {
+        localStorage.setItem('newsArticles', JSON.stringify(fresh.slice(0, 50)));
+      }
+      
       setHasMore(fresh.length >= 18);
       setPage(pg + 1);
     } catch {
